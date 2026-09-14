@@ -1,0 +1,839 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* =========================================================
+   GLOBAL PAGE RESET
+   ========================================================= */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  min-height: 100%;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  @apply bg-cream text-ink font-sans antialiased dark:bg-ink dark:text-cream-soft;
+
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(21, 19, 15, 0.05) 1px,
+      transparent 0
+    );
+
+  background-size: 22px 22px;
+
+  /*
+   * BODY is the ONLY normal page scroll container.
+   */
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+
+  /*
+   * Do NOT create a separate scrolling container here.
+   */
+  overflow: visible;
+
+  /*
+   * Prevent accidental stacking/layout issues.
+   */
+  position: relative;
+}
+
+.dark body {
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(247, 241, 227, 0.06) 1px,
+      transparent 0
+    );
+}
+
+
+/* =========================================================
+   FIXED SMART ATTENDANCE NAVBAR
+   ========================================================= */
+
+/*
+ * THIS IS THE MAIN FIX.
+ *
+ * Navbar is rendered directly into document.body using
+ * React Portal.
+ *
+ * position: fixed therefore refers to the browser viewport.
+ */
+
+.app-navbar {
+  position: absolute !important;
+
+  inset: 0 0 auto 0 !important;
+
+  width: 100vw !important;
+  height: 76px !important;
+
+  margin: 0 !important;
+  padding: 10px 12px 6px !important;
+
+  box-sizing: border-box !important;
+
+  z-index: 2147483647 !important;
+
+  /*
+   * Absolutely NO movement.
+   */
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition: none !important;
+  animation: none !important;
+
+  /*
+   * Don't allow hover effects to move the container.
+   */
+  top: 0 !important;
+
+  pointer-events: none;
+
+  isolation: isolate;
+}
+
+
+/*
+ * Actual black rounded navbar.
+ */
+
+.app-navbar-inner {
+  position: relative !important;
+
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+
+  width: 100% !important;
+  max-width: 1280px !important;
+
+  height: 60px !important;
+  min-height: 60px !important;
+
+  margin: 0 auto !important;
+  padding: 10px 12px !important;
+
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: 12px;
+
+  background: #15130f !important;
+  color: #f7f1e3 !important;
+
+  border: 2px solid #15130f !important;
+  border-radius: 9999px !important;
+
+  box-shadow: 4px 4px 0 #15130f !important;
+
+  /*
+   * Absolutely no movement.
+   */
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition: none !important;
+  animation: none !important;
+
+  pointer-events: auto;
+
+  overflow: visible;
+}
+
+
+/*
+ * Kill ALL possible hover movement on the navbar.
+ */
+
+.app-navbar:hover,
+.app-navbar-inner:hover {
+  position: absolute !important;
+  top: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+
+/* =========================================================
+   NAVBAR BRAND
+   ========================================================= */
+
+.navbar-brand {
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+
+  color: #f7f1e3 !important;
+
+  text-decoration: none !important;
+
+  transform: none !important;
+  transition: none !important;
+}
+
+.navbar-brand:hover {
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+}
+
+.navbar-logo {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+
+  background: #f4d35e;
+  color: #15130f;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  border: 0;
+
+  transform: none !important;
+  transition: none !important;
+}
+
+.navbar-title {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   NAVBAR RIGHT SIDE
+   ========================================================= */
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   THEME BUTTON
+   ========================================================= */
+
+.navbar-theme-button {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+
+  border: 2px solid rgba(247, 241, 227, 0.5);
+
+  background: transparent;
+
+  color: #f7f1e3;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  transform: none !important;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease !important;
+}
+
+.navbar-theme-button:hover {
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+
+  background: rgba(247, 241, 227, 0.1);
+}
+
+
+/* =========================================================
+   USER BADGE
+   ========================================================= */
+
+.navbar-user {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 34px;
+
+  padding: 6px 12px;
+
+  border-radius: 9999px;
+
+  background: rgba(247, 241, 227, 0.1);
+
+  color: #f7f1e3;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+   ========================================================= */
+
+.navbar-logout {
+  min-height: 34px;
+
+  padding: 6px 14px;
+
+  border-radius: 9999px;
+
+  border: 2px solid #f4d35e;
+
+  background: #f4d35e;
+
+  color: #15130f;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transform: none !important;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease !important;
+}
+
+.navbar-logout:hover {
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+
+  background: #e9c84e;
+  border-color: #e9c84e;
+}
+
+
+/* =========================================================
+   PAGE CONTENT
+   ========================================================= */
+
+.app-main {
+  width: 100%;
+
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  /*
+   * Space for fixed navbar.
+   */
+  padding-top: 90px;
+
+  overflow: visible;
+
+  position: relative;
+
+  transform: none !important;
+}
+
+
+/*
+ * Never allow app-main to create a scrolling container.
+ */
+
+.app-main,
+.app-main > * {
+  overflow-x: visible;
+}
+
+
+/* =========================================================
+   MOBILE NAVBAR
+   ========================================================= */
+
+@media (max-width: 640px) {
+
+  .app-navbar {
+    height: 70px !important;
+
+    padding: 8px 8px 5px !important;
+  }
+
+  .app-navbar-inner {
+    height: 56px !important;
+    min-height: 56px !important;
+
+    padding: 8px 10px !important;
+
+    box-shadow: 3px 3px 0 #15130f !important;
+  }
+
+  .navbar-title {
+    display: inline;
+    min-width: 0;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+
+  .navbar-user {
+    display: none;
+  }
+
+  .navbar-theme-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .navbar-logout {
+    min-height: 34px;
+
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .app-main {
+    padding-top: 82px;
+  }
+}
+
+
+/* =========================================================
+   GENERAL PAGE STYLES
+   ========================================================= */
+
+.page-shell {
+  @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10;
+}
+
+.page-header {
+  @apply flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6;
+}
+
+.eyebrow {
+  @apply text-sm font-semibold text-ink-muted dark:text-cream-soft/70 tracking-wide;
+}
+
+.page-title {
+  @apply text-3xl sm:text-4xl font-black tracking-tight leading-tight mt-1;
+}
+
+.page-subtitle {
+  @apply text-sm sm:text-base text-ink-muted dark:text-cream-soft/70 mt-2 leading-6;
+}
+
+.label {
+  @apply block text-sm font-semibold mb-2;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.table {
+  @apply w-full text-left text-sm border-separate border-spacing-0;
+}
+
+.table th {
+  @apply bg-cream-deep dark:bg-ink-soft px-4 py-3 font-extrabold align-middle whitespace-nowrap;
+}
+
+.table td {
+  @apply px-4 py-4 align-middle border-t border-ink/10 dark:border-cream-soft/10;
+}
+
+.table th:first-child,
+.table td:first-child {
+  @apply rounded-l-xl;
+}
+
+.table th:last-child,
+.table td:last-child {
+  @apply rounded-r-xl;
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard-grid > * {
+  @apply h-full;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge-success {
+  @apply bg-sage border-ink text-ink;
+}
+
+.badge-danger {
+  @apply bg-blush border-ink text-ink;
+}
+
+.tint-pink {
+  @apply bg-blush;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.card {
+  @apply bg-cream-soft dark:bg-ink-soft border-2 border-ink dark:border-cream-soft/70
+    rounded-3xl shadow-pop dark:shadow-none p-4 sm:p-5 transition-colors;
+}
+
+.card-tint {
+  @apply border-2 border-ink rounded-3xl shadow-pop p-4 sm:p-5;
+}
+
+.tint-butter {
+  @apply bg-butter;
+}
+
+.tint-blush {
+  @apply bg-blush;
+}
+
+.tint-sage {
+  @apply bg-sage;
+}
+
+.tint-sky {
+  @apply bg-sky;
+}
+
+.panel-dark {
+  @apply bg-ink text-cream-soft rounded-3xl p-4 sm:p-5;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn {
+  @apply px-4 py-2 rounded-full font-semibold text-sm transition-all
+    disabled:opacity-40 disabled:cursor-not-allowed
+    active:translate-y-[1px];
+}
+
+.btn-primary {
+  @apply btn bg-ink text-cream-soft border-2 border-ink shadow-pop
+    hover:bg-ink-soft active:shadow-none
+    dark:bg-cream-soft dark:text-ink dark:border-cream-soft;
+}
+
+.btn-outline {
+  @apply btn bg-transparent border-2 border-ink text-ink shadow-pop
+    hover:bg-ink hover:text-cream-soft active:shadow-none
+    dark:border-cream-soft/70 dark:text-cream-soft
+    dark:hover:bg-cream-soft dark:hover:text-ink;
+}
+
+.btn-outline.is-active {
+  @apply bg-ink text-cream-soft dark:bg-cream-soft dark:text-ink;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.input {
+  @apply w-full rounded-2xl border-2 border-ink/80
+    bg-cream-soft dark:bg-ink
+    dark:border-cream-soft/50
+    px-3 py-2 text-sm
+    placeholder:text-ink-muted
+    focus:outline-none
+    focus:ring-2
+    focus:ring-butter-deep
+    dark:text-cream-soft
+    transition-colors;
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.badge {
+  @apply inline-block text-xs font-semibold px-2.5 py-1
+    rounded-full border border-ink/70;
+}
+
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+.pill-tab {
+  @apply px-4 py-1.5 rounded-full text-sm font-semibold
+    border-2 border-ink whitespace-nowrap transition-colors
+    dark:border-cream-soft/70;
+}
+
+.pill-tab-active {
+  @apply bg-ink text-cream-soft dark:bg-cream-soft dark:text-ink;
+}
+
+.pill-tab-idle {
+  @apply bg-transparent text-ink hover:bg-butter/60
+    dark:text-cream-soft dark:hover:bg-cream-soft/10;
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider-dashed {
+  @apply border-t-2 border-dashed
+    border-ink/20 dark:border-cream-soft/20;
+}
+
+
+/* =========================================================
+   DARK MODE READABILITY
+   ========================================================= */
+
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #f7f1e3 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: #d7d0c2 !important;
+}
+
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: #f7f1e3 !important;
+}
+
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: #d7d0c2 !important;
+}
+
+.dark .text-ink\/80 {
+  color: rgba(247, 241, 227, 0.88) !important;
+}
+
+.dark .text-ink\/70 {
+  color: rgba(247, 241, 227, 0.78) !important;
+}
+
+.dark .text-ink\/60,
+.dark .text-ink-muted {
+  color: rgba(247, 241, 227, 0.68) !important;
+}
+
+.dark .text-ink\/50 {
+  color: rgba(247, 241, 227, 0.58) !important;
+}
+
+.dark .text-ink\/40 {
+  color: rgba(247, 241, 227, 0.5) !important;
+}
+
+/* Light tinted panels keep dark ink text in dark mode for contrast. */
+.dark .card-tint {
+  color: #15130f;
+}
+
+.dark .card-tint .text-ink\/80 {
+  color: rgba(21, 19, 15, 0.88) !important;
+}
+
+.dark .card-tint .text-ink\/70 {
+  color: rgba(21, 19, 15, 0.78) !important;
+}
+
+.dark .card-tint .text-ink\/60,
+.dark .card-tint .text-ink-muted {
+  color: rgba(21, 19, 15, 0.68) !important;
+}
+
+.dark .card-tint .text-ink\/50 {
+  color: rgba(21, 19, 15, 0.58) !important;
+}
+
+.dark .card-tint .text-ink\/40 {
+  color: rgba(21, 19, 15, 0.5) !important;
+}
+
+.dark .card-tint .btn-outline {
+  color: #15130f;
+  border-color: rgba(21, 19, 15, 0.7);
+}
+
+.dark .card-tint .btn-outline:hover {
+  color: #f7f1e3;
+  background-color: #15130f;
+}
+
+.dark .card-tint.tint-butter {
+  background-color: #f3de94 !important;
+}
+
+.dark .card-tint.tint-blush,
+.dark .card-tint.tint-pink {
+  background-color: #f4c6d7 !important;
+}
+
+.dark .card-tint.tint-sage {
+  background-color: #bfce9c !important;
+}
+
+.dark .card-tint.tint-sky {
+  background-color: #bbd6e8 !important;
+}
+
+.dark .bg-butter,
+.dark .bg-blush,
+.dark .bg-sage,
+.dark .bg-sky {
+  color: #15130f !important;
+}
+
+.dark .bg-white {
+  background-color: #24221d !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: #2b2924 !important;
+}
+
+.dark .bg-slate-800,
+.dark .bg-slate-900 {
+  background-color: #1b1a17 !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: rgba(247, 241, 227, 0.18) !important;
+}
+
+.dark .border-slate-700,
+.dark .border-slate-800 {
+  border-color: rgba(247, 241, 227, 0.28) !important;
+}
+
+.dark .placeholder\:text-ink-muted::placeholder {
+  color: #bdb5a7 !important;
+}
+
+
+/* =========================================================
+   EXTRA NAVBAR SAFETY
+   ========================================================= */
+
+/*
+ * These rules make sure common Tailwind hover utilities
+ * cannot move the navbar itself.
+ */
+
+.app-navbar *,
+.app-navbar-inner * {
+  will-change: auto;
+}
+
+.app-navbar,
+.app-navbar-inner {
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+}
+
+.app-navbar::before,
+.app-navbar::after,
+.app-navbar-inner::before,
+.app-navbar-inner::after {
+  transform: none !important;
+}
+
+
+/*
+ * The navbar itself NEVER animates.
+ * Buttons may change color, but nothing moves.
+ */
+
+.app-navbar *,
+.app-navbar *:hover {
+  animation: none !important;
+}
+
+
+/* =========================================================
+   END
+   ========================================================= */

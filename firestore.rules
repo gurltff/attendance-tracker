@@ -1,0 +1,261 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function myProfile() {
+      return get(
+        /databases/$(database)/documents/users/$(request.auth.uid)
+      ).data;
+    }
+
+    function myRole() {
+      return myProfile().role;
+    }
+
+    function sameClass(studentId) {
+      let student =
+        get(
+          /databases/$(database)/documents/users/$(studentId)
+        ).data;
+
+      return student.enrolledCourseIds[0]
+          == myProfile().enrolledCourseIds[0]
+        && student.year
+          == myProfile().year;
+    }
+
+    function teacherOwnsCourse(courseKey) {
+      return myRole() == 'teacher'
+        && courseKey in myProfile().assignedCourseIds;
+    }
+
+    // USERS
+    match /users/{uid} {
+
+      allow read: if signedIn()
+        && (
+          request.auth.uid == uid
+          || myRole() in ['teacher', 'cr']
+        );
+
+      /*
+       * Registration can create only student or teacher.
+       * CR cannot self-register.
+       */
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.data.role
+          in ['student', 'teacher'];
+
+      /*
+       * User can update their own profile,
+       * but cannot change their own role.
+       *
+       * Teacher can promote/demote student <-> CR.
+       */
+      allow update: if signedIn() && (
+        (
+          request.auth.uid == uid
+          && request.resource.data.role
+             == resource.data.role
+          && (
+            (
+              resource.data.role == 'student'
+              && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['year'])
+            )
+            || (
+              resource.data.role == 'teacher'
+              && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['assignedCourseIds'])
+            )
+          )
+        )
+        ||
+        (
+          myRole() == 'teacher'
+          && resource.data.role
+             in ['student', 'cr']
+          && request.resource.data.role
+             in ['student', 'cr']
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly([
+              'role',
+              'assignedCourseIds',
+              'enrolledCourseIds',
+              'year'
+            ])
+        )
+      );
+
+      allow delete: if false;
+    }
+
+    // COURSES
+    match /courses/{id} {
+      allow read: if signedIn();
+
+      allow create, update, delete:
+        if signedIn()
+        && myRole()
+           in ['teacher', 'cr'];
+    }
+
+    // ANNOUNCEMENTS
+    match /announcements/{id} {
+
+      allow read: if true;
+
+      allow create:
+        if signedIn()
+        && myRole() == 'cr'
+        && request.resource.data.authorId
+           == request.auth.uid;
+
+      allow update, delete:
+        if signedIn()
+        && myRole() == 'cr'
+        && resource.data.authorId
+           == request.auth.uid;
+    }
+
+    // ATTENDANCE
+    match /attendanceRecords/{id} {
+
+      /*
+       * Student/CR:
+       * own records.
+       *
+       * Teacher:
+       * attendance records.
+       *
+       * CR:
+       * only records belonging to their class.
+       */
+      allow read:
+        if signedIn()
+        && (
+          resource.data.studentId
+            == request.auth.uid
+
+          || (
+            myRole() == 'teacher'
+            && teacherOwnsCourse(
+              resource.data.courseKey
+            )
+          )
+
+          || (
+            myRole() == 'cr'
+            && sameClass(
+              resource.data.studentId
+            )
+          )
+        );
+
+      /*
+       * Students and CRs can only create their
+       * own self-check-in.
+       */
+      allow create:
+        if signedIn()
+        && (
+          (
+            myRole()
+              in ['student', 'cr']
+            && request.resource.data.studentId
+              == request.auth.uid
+            && request.resource.data.source
+              == 'student_self_checkin'
+          )
+
+          ||
+
+          (
+            myRole() == 'teacher'
+            && request.resource.data.source
+              == 'teacher_marked'
+            && request.resource.data.teacherId
+              == request.auth.uid
+            && teacherOwnsCourse(
+              request.resource.data.courseKey
+            )
+          )
+        );
+
+      /*
+       * Only the teacher who owns that subject
+       * can modify its attendance.
+       */
+      allow update, delete:
+        if signedIn()
+        && myRole() == 'teacher'
+        && teacherOwnsCourse(
+          resource.data.courseKey
+        );
+    }
+
+    // ATTENDANCE SESSIONS
+    match /attendanceSessions/{id} {
+
+      allow read:
+        if signedIn()
+        && myRole()
+           in ['teacher', 'cr'];
+
+      allow create:
+        if signedIn()
+        && myRole() == 'teacher'
+        && request.resource.data.teacherId
+           == request.auth.uid
+        && teacherOwnsCourse(
+          request.resource.data.courseKey
+        );
+
+      allow update, delete:
+        if signedIn()
+        && myRole() == 'teacher'
+        && resource.data.teacherId
+           == request.auth.uid
+        && teacherOwnsCourse(
+          resource.data.courseKey
+        );
+    }
+
+    // TIMETABLE
+    match /timetableEntries/{id} {
+
+      allow read:
+        if signedIn()
+        && resource.data.studentId
+           == request.auth.uid;
+
+      allow create:
+        if signedIn()
+        && request.resource.data.studentId
+           == request.auth.uid;
+
+      allow update:
+        if signedIn()
+        && resource.data.studentId
+           == request.auth.uid
+        && request.resource.data.studentId
+           == request.auth.uid;
+
+      allow delete:
+        if signedIn()
+        && resource.data.studentId
+           == request.auth.uid;
+    }
+
+    // DENY EVERYTHING ELSE
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
